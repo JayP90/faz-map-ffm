@@ -60,7 +60,7 @@ export default {
     parseCsv (csv) {
       var dsv = d3.dsvFormat(";")
 
-      return dsv.parse(csv, v => {
+      return dsv.parse(csv, (v, j) => {
         if(!v.WkrNr || +v.WkrNr === 0) return
 
         let data = {
@@ -68,10 +68,9 @@ export default {
           region: v.Wahlkreis
         }
         let max = {val: null, id: null}
-
         this.parties.forEach((d, i) => {
-          data[d.name] = +v[d.name] / +v['Gültige Stimmen']
-          data[d.name] = +v[d.name]
+          data[d.name] = +v[d.name] / +v['Gültige Stimmen'].replace('.', '')
+          // data[d.name] = +v[d.name]
 
           if (max.val === null || max.val < data[d.name]) {
             max.val = data[d.name]
@@ -98,7 +97,6 @@ export default {
     ]
     Promise.all(fetches).then((results) => {
       this.map = results[1]
-      console.log(results[1])
       var dsv = d3.dsvFormat(";");
       //console.log('dsv: ', dsv)
       this.data = this.parseCsv( results[0] )

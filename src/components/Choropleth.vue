@@ -146,6 +146,7 @@ export default {
       })
     },
     legendLabels () {
+      console.log(this.category.domain)
       return [{
         translate: 'translate(16, 0)',
         text: '0%'
