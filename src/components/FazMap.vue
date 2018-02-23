@@ -83,6 +83,8 @@ export default {
         })
         data['Stärkste Kraft'] = max.id
 
+        console.log(data)
+
         return data
       })
     },
