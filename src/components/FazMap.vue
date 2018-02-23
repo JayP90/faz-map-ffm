@@ -1,6 +1,6 @@
 <template>
   <div class="faz-map">
-    <faz-select :map="map" :options="categories" :search="true" value-key="id" label-key="name" v-model="category"></faz-select>
+    <faz-select :map="map" :options="categories" :search="true" value-key="id" label-key="displayName" v-model="category"></faz-select>
     <choropleth v-if="map" :map="map" :category="categories[category]" v-model="hover"></choropleth>
   </div>
 </template>
@@ -117,6 +117,7 @@ export default {
     categories () {
       let categories = [{
         name: 'Stärkste Kraft',
+        displayName: 'Stärkste Kraft',
         id: 0,
         legend: 'ordinal',
         categories: this.parties.map((d, i) => { return {label: d.name, val: i} }),
