@@ -67,8 +67,8 @@ export default {
         let max = {val: null, id: null}
 
         this.parties.forEach((d, i) => {
-          data[d.name] = +v[d.name] / +v['Gültige Stimmen']
-          data[d.name] = +v[d.name]
+          data[d.name] = +v[d.name] / +v['Gültige Stimmen'] * 100
+          //data[d.name] = +v[d.name]
 
           if (max.val === null || max.val < data[d.name]) {
             max.val = data[d.name]
@@ -80,6 +80,8 @@ export default {
           }
         })
         data['Stärkste Kraft'] = max.id
+
+        console.log(data)
 
         return data
       })
