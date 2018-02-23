@@ -2,6 +2,9 @@
   <div class="faz-map">
     <faz-select :map="map" :options="categories" :search="true" value-key="id" label-key="name" v-model="category"></faz-select>
     <choropleth v-if="map" :map="map" :category="categories[category]" v-model="hover"></choropleth>
+    <transition name="fade">
+      <div class="tooltip" v-if="hover" :style="{'left': hover.x + 'px', 'top': hover.y + 'px'}">{{hover.data.region}}</div>
+    </transition>
   </div>
 </template>
 
@@ -104,7 +107,7 @@ export default {
     data () {
       this.map.features.forEach(f => {
         f.properties.data = this.data.find(d => d.WkrNr === +f.properties.WBZ_Name.replace('-', '')) || {}
-        f.properties.id = +f.properties.WBZ_Name
+        f.properties.id = +f.properties.WBZ_Name.replace('-', '')
       })
     }
   },
@@ -144,5 +147,22 @@ export default {
       left: 50%;
       transform: translateX(-50%);
     }
+
+    .tooltip {
+      padding: 2px 5px;
+      position: absolute;
+      color: #333;
+      font-size: 14px;
+      background: #fff;
+      border-radius: 2px;
+      transform: translateX(-50%);
+      font-family: FAZGoldSans-Regular, "FAZGoldSans-Regular", helvetica neue,helvetica, Arial,Helvetica, sans-serif;
+    }
+  }
+  .fade-enter-active, .fade-leave-active {
+    transition: opacity .15s;
+  }
+  .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+    opacity: 0;
   }
 </style>
