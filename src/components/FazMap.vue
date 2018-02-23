@@ -53,14 +53,17 @@ export default {
       var dsv = d3.dsvFormat(";")
 
       return dsv.parse(csv, v => {
-        console.log(v)
+        if(!v.WkrNr || +v.WkrNr === 0) return
+
         let data = {
           WkrNr: +v.WkrNr,
           region: v.Wahlkreis
         }
         let max = {val: null, id: null}
+
         this.parties.forEach((d, i) => {
-          data[d.name] = +v[d.name] / +v.Insgesamt
+          data[d.name] = +v[d.name] / +v['Gültige Stimmen']
+          data[d.name] = +v[d.name]
 
           if (max.val === null || max.val < data[d.name]) {
             max.val = data[d.name]
@@ -72,6 +75,7 @@ export default {
           }
         })
         data['Stärkste Kraft'] = max.id
+
         return data
       })
     },
@@ -86,20 +90,21 @@ export default {
     ]
     Promise.all(fetches).then((results) => {
       this.map = results[1]
+      console.log(results[1])
       var dsv = d3.dsvFormat(";");
       //console.log('dsv: ', dsv)
       this.data = this.parseCsv( results[0] )
       this.maxValues = this.parties.map(d => this.ceil(d.max))
-      console.log('map: ', this.map)
-      console.log('data: ', this.data)
-      console.log('maxValues: ', this.maxValues)
+      // console.log('map: ', this.map)
+      // console.log('data: ', this.data)
+      // console.log('maxValues: ', this.maxValues)
     })
   },
   watch: {
     data () {
       this.map.features.forEach(f => {
-        f.properties.data = this.data.find(d => d.WkrNr === f.properties.WKR_NR) || {}
-        f.properties.id = f.properties.WKR_NR
+        f.properties.data = this.data.find(d => d.WkrNr === +f.properties.WBZ_Name.replace('-', '')) || {}
+        f.properties.id = +f.properties.WBZ_Name
       })
     }
   },
@@ -123,6 +128,7 @@ export default {
           colorRange: [this.baseColor, d.color]
         }
       })
+
       return categories.concat(parties)
     }
   }
