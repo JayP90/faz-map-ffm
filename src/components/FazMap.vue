@@ -50,7 +50,9 @@ export default {
   },
   methods: {
     parseCsv (csv) {
-      return csvParse(csv, v => {
+      var dsv = d3.dsvFormat(";")
+
+      return dsv.parse(csv, v => {
         console.log(v)
         let data = {
           WkrNr: +v.WkrNr,
@@ -84,7 +86,9 @@ export default {
     ]
     Promise.all(fetches).then((results) => {
       this.map = results[1]
-      this.data = this.parseCsv(results[0].dsvFormat(";"))
+      var dsv = d3.dsvFormat(";");
+      //console.log('dsv: ', dsv)
+      this.data = this.parseCsv( results[0] )
       this.maxValues = this.parties.map(d => this.ceil(d.max))
       console.log('map: ', this.map)
       console.log('data: ', this.data)
