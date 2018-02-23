@@ -32,19 +32,24 @@ export default {
       maxValues: {},
       parties: [{
         name: 'Dr. Weyland,Bernadette',
-        color: '#333333'
+        displayName: 'Bernadette Weyland, CDU',
+        color: '#111111'
       }, {
         name: 'Feldmann,Peter',
-        color: '#FF0000'
+        displayName: 'Peter Feldmann, SPD',
+        color: '#c51d1e'
       }, {
         name: 'Dr. Eskandari-Grünberg,Nargess',
-        color: '#008D00'
+        displayName: 'Nargess Eskandari-Grünberg, Grüne',
+        color: '#0c9941'
       }, {
         name: 'Wißler,Janine',
-        color: '#D90063'
+        displayName: 'Janine Wißler, Linke',
+        color: '#bb4894'
       }, {
         name: 'Wehnemann,Nico',
-        color: '#FFD700'
+        displayName: 'Nico Wehnemann, Die Partei',
+        color: '#961414'
       }]
     }
   },
@@ -122,6 +127,7 @@ export default {
       let parties = this.parties.map((d, i) => {
         return {
           name: d.name,
+          displayName: d.displayName,
           id: i + 1,
           type: 'party',
           domain: [0, this.maxValues[i]],
