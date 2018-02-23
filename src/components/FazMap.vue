@@ -1,6 +1,6 @@
 <template>
   <div class="faz-map">
-    <faz-select :map="map" :options="categories" :search="true" value-key="id" label-key="name" v-model="category"></faz-select>
+    <faz-select :map="map" :options="categories" :search="true" value-key="id" label-key="displayName" v-model="category"></faz-select>
     <choropleth v-if="map" :map="map" :category="categories[category]" v-model="hover"></choropleth>
     <transition name="fade">
       <div class="tooltip" v-if="hover" :style="{'left': hover.x + 'px', 'top': hover.y + 'px'}">{{hover.data.region}}</div>
@@ -35,19 +35,24 @@ export default {
       maxValues: {},
       parties: [{
         name: 'Dr. Weyland,Bernadette',
-        color: '#333333'
+        displayName: 'Bernadette Weyland, CDU',
+        color: '#111111'
       }, {
         name: 'Feldmann,Peter',
-        color: '#FF0000'
+        displayName: 'Peter Feldmann, SPD',
+        color: '#c51d1e'
       }, {
         name: 'Dr. Eskandari-Grünberg,Nargess',
-        color: '#008D00'
+        displayName: 'Nargess Eskandari-Grünberg, Grüne',
+        color: '#0c9941'
       }, {
         name: 'Wißler,Janine',
-        color: '#D90063'
+        displayName: 'Janine Wißler, Linke',
+        color: '#bb4894'
       }, {
         name: 'Wehnemann,Nico',
-        color: '#FFD700'
+        displayName: 'Nico Wehnemann, Die Partei',
+        color: '#961414'
       }]
     }
   },
@@ -115,6 +120,7 @@ export default {
     categories () {
       let categories = [{
         name: 'Stärkste Kraft',
+        displayName: 'Stärkste Kraft',
         id: 0,
         legend: 'ordinal',
         categories: this.parties.map((d, i) => { return {label: d.name, val: i} }),
@@ -125,6 +131,7 @@ export default {
       let parties = this.parties.map((d, i) => {
         return {
           name: d.name,
+          displayName: d.displayName,
           id: i + 1,
           type: 'party',
           domain: [0, this.maxValues[i]],
