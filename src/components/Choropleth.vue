@@ -107,7 +107,7 @@ export default {
         data: polygon.feature.properties.data,
         x: Math.round(centroid[0]),
         y: Math.round(centroid[1]),
-        id: polygon.feature.properties.id
+        id: +polygon.feature.properties.WBZ_Name.replace('-', '')
       })
     },
     mouseleave (polygon) {
@@ -129,7 +129,9 @@ export default {
     },
     hoverPath () {
       if (this.value == null) return null
-      return this.polygons.find(p => p.feature.properties.id === this.value.id).path
+      return this.polygons.find(p => {
+        return +p.feature.properties.WBZ_Name.replace('-', '') === this.value.id
+      }).path
     },
     gradient () {
       let stepSize = (this.category.domain ? this.category.domain[1] : this.domain[1]) < 0.15 ? 0.025 : 0.05
