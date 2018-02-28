@@ -21,6 +21,14 @@
         </g>
       </g>
     </svg>
+    <div class="legend" v-else width="300" height="48">
+      <ul>
+        <li v-for="party in parties.slice(0,2)">
+          <span class="legend-color" :style="{background: party.color}"></span>
+          <span class="legend-name">{{party.displayName}}</span>
+        </li>
+      </ul>
+    </div>
   </div>
 </template>
 
@@ -47,6 +55,7 @@ export default {
   name: 'choropleth',
   props: {
     map: Object,
+    parties: Array,
     domain: {
       type: Array,
       default () {
@@ -98,6 +107,9 @@ export default {
       })
     },
     getFill (polygon) {
+      if( polygon.feature.properties.data[this.category.name] === undefined) {
+        return '#ddd'
+      }
       return this.colorScale(polygon.feature.properties.data[this.category.name])
     },
     mouseover (polygon) {
@@ -169,12 +181,43 @@ export default {
     left: 50%;
     transform: translateX(-50%);
     position: relative;
+    font-family: FAZGoldSans-Regular, "FAZGoldSans-Regular", helvetica neue,helvetica, Arial,Helvetica, sans-serif;
+
+    ul{
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+
+      li{
+        display: inline-block;
+        padding-right: 20px;
+
+        .legend-color{
+          display: inline-block;
+          position: absolute;
+          width: 16px;
+          height: 16px;
+          margin-right: 6px;
+          border-radius: 50%;
+        }
+
+        .legend-name{
+          margin-left: 24px;
+          font-size: 13px;
+          line-height: 16px;
+          display: inline-block;
+        }
+      }
+    }
 
     .legend-label {
       font-family: Verdana, sans-serif;
       text-anchor: middle;
       font-size: 12px;
     }
+
+
   }
 
   .map {
@@ -185,6 +228,7 @@ export default {
       &.hover {
         stroke-width: 1.5;
         fill: none;
+        pointer-events: none;
       }
     }
   }

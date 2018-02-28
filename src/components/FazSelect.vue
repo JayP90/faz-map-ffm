@@ -116,7 +116,7 @@ export default {
     max-width: 360px;
 
     .title {
-      font-family: Verdana, sans-serif;
+      font-family: FAZGoldSans-Regular, "FAZGoldSans-Regular", helvetica neue,helvetica, Arial,Helvetica, sans-serif;
       color: $C_DEFAULT;
       font-size: 12px;
       margin-bottom: 2px;
@@ -125,7 +125,7 @@ export default {
     .option {
       border: 1px solid $C_DEFAULT;
       color: $C_HIGHLIGHT;
-      font-family: Verdana, sans-serif;
+      font-family: FAZGoldSans-Regular, "FAZGoldSans-Regular", helvetica neue,helvetica, Arial,Helvetica, sans-serif;
       box-sizing: border-box;
       padding-top: 11px;
       padding-left: 12px;
@@ -153,7 +153,7 @@ export default {
         input {
           border: none;
           outline: none;
-          font-family: Verdana, sans-serif;
+          font-family: FAZGoldSans-Regular, "FAZGoldSans-Regular", helvetica neue,helvetica, Arial,Helvetica, sans-serif;
           font-size: 13px;
         }
         .close {

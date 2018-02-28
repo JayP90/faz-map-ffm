@@ -1,9 +1,16 @@
 <template>
   <div class="faz-map">
     <faz-select :map="map" :options="categories" :search="true" value-key="id" label-key="displayName" v-model="category"></faz-select>
-    <choropleth v-if="map" :map="map" :category="categories[category]" v-model="hover"></choropleth>
+    <choropleth v-if="map" :map="map" :category="categories[category]" :parties="parties" v-model="hover"></choropleth>
     <transition name="fade">
-      <div class="tooltip" v-if="hover" :style="{'left': hover.x + 'px', 'top': hover.y + 'px'}">{{hover.data.region}}</div>
+      <div class="tooltip" v-if="hover" :style="{'left': hover.x + 'px', 'top': hover.y + 'px'}">
+        {{hover.data.region}}<br>
+        <ul>
+          <li v-for="party in parties">
+            {{party.displayName}}: {{ Math.round(hover.data[party.name]*100)}}%
+          </li>
+        </ul>
+      </div>
     </transition>
   </div>
 </template>
@@ -25,8 +32,10 @@ export default {
   },
   data () {
     return {
-      dataUrl: 'data/FFM_OBW2018_Stadtteile_WBZ.csv', //'data/results.csv',
-      mapUrl: 'data/ffmwahlbezirke.geojson', //'data/wahlkreise.json',
+      // dataUrl: 'http://dynamic.faz.net/red/2018/ob_wahl/data/FFM_OBW2018_Stadtteile_WBZ.csv', 
+      dataUrl: 'data/FFM_OBW2018_Stadtteile_WBZ_offiziell.csv',
+      // mapUrl: 'http://dynamic.faz.net/red/2018/ob_wahl/data/ffmwahlbezirke.geojson', 
+      mapUrl: 'data/ffmwahlbezirke.geojson',
       data: null,
       map: null,
       category: 0,
@@ -50,9 +59,9 @@ export default {
         displayName: 'Janine Wißler, Linke',
         color: '#bb4894'
       }, {
-        name: 'Wehnemann,Nico',
-        displayName: 'Nico Wehnemann, Die Partei',
-        color: '#961414'
+        name: 'Stein,Volker',
+        displayName: 'Volker Stein, unabhängig',
+        color: '#2b7ab4'
       }]
     }
   },
@@ -83,7 +92,7 @@ export default {
         })
         data['Stärkste Kraft'] = max.id
 
-        console.log(data)
+        //console.log(data)
 
         return data
       })
@@ -100,11 +109,11 @@ export default {
     Promise.all(fetches).then((results) => {
       this.map = results[1]
       var dsv = d3.dsvFormat(";");
-      //console.log('dsv: ', dsv)
+      console.log('results: ', results[0])
       this.data = this.parseCsv( results[0] )
       this.maxValues = this.parties.map(d => this.ceil(d.max))
       // console.log('map: ', this.map)
-      // console.log('data: ', this.data)
+      console.log('data: ', this.data)
       // console.log('maxValues: ', this.maxValues)
     })
   },
@@ -156,14 +165,28 @@ export default {
     }
 
     .tooltip {
-      padding: 2px 5px;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      padding: 4px 10px;
       position: absolute;
-      color: #333;
+      color: #fff;
       font-size: 14px;
-      background: #fff;
+      line-height: 1.3;
+      background: #333;
       border-radius: 2px;
       transform: translateX(-50%);
       font-family: FAZGoldSans-Regular, "FAZGoldSans-Regular", helvetica neue,helvetica, Arial,Helvetica, sans-serif;
+      pointer-events: none;
+
+      ul {
+        margin: 0;
+        margin-top: 1em;
+        padding: 0;
+        list-style: none;
+        li {
+
+        }
+      }
     }
   }
   .fade-enter-active, .fade-leave-active {
