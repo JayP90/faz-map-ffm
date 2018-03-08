@@ -8,7 +8,7 @@
         {{label}}
       </div>
       <div class="input" v-show="toggle && search">
-        <input v-model="searchTerm" type="text" placeholder="SUCHE" ref="search">
+        <input v-model="searchTerm" type="text" placeholder="ANSICHT WÄHLEN" ref="search">
         <div class="close" @click="close($event)"></div>
       </div>
     </div>

@@ -7,6 +7,7 @@
         {{hover.data.region}}<br>
         <ul>
           <li v-for="party in parties">
+            <div :style="{ background: party.color, width: Math.round(hover.data[party.name]*100) + '%' }" style="height:10px"></div>
             {{party.displayName}}: {{ Math.round(hover.data[party.name]*100)}}%
           </li>
         </ul>
@@ -34,8 +35,10 @@ export default {
     return {
       // dataUrl: 'http://dynamic.faz.net/red/2018/ob_wahl/data/FFM_OBW2018_Stadtteile_WBZ.csv', 
       dataUrl: 'data/FFM_OBW2018_Stadtteile_WBZ_offiziell.csv',
+      // dataUrl: 'data/FFM_OBW2018Stich_Stadtteile_WBZ-UTF8-TEST.csv',
       // mapUrl: 'http://dynamic.faz.net/red/2018/ob_wahl/data/ffmwahlbezirke.geojson', 
-      mapUrl: 'data/ffmwahlbezirke.geojson',
+      // mapUrl: 'data/ffmwahlbezirke.geojson',
+      mapUrl: 'data/Wahlbezirke2017.geojson',
       data: null,
       map: null,
       category: 0,
@@ -50,7 +53,7 @@ export default {
         name: 'Feldmann,Peter',
         displayName: 'Peter Feldmann, SPD',
         color: '#c51d1e'
-      }, {
+      }/*, {
         name: 'Dr. Eskandari-Grünberg,Nargess',
         displayName: 'Nargess Eskandari-Grünberg, Grüne',
         color: '#0c9941'
@@ -62,7 +65,7 @@ export default {
         name: 'Stein,Volker',
         displayName: 'Volker Stein, unabhängig',
         color: '#2b7ab4'
-      }]
+      }*/]
     }
   },
   methods: {
@@ -109,11 +112,11 @@ export default {
     Promise.all(fetches).then((results) => {
       this.map = results[1]
       var dsv = d3.dsvFormat(";");
-      console.log('results: ', results[0])
+      // console.log('results: ', results[0])
       this.data = this.parseCsv( results[0] )
       this.maxValues = this.parties.map(d => this.ceil(d.max))
       // console.log('map: ', this.map)
-      console.log('data: ', this.data)
+      //console.log('data: ', this.data)
       // console.log('maxValues: ', this.maxValues)
     })
   },
