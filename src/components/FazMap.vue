@@ -38,7 +38,7 @@ export default {
       // dataUrl: 'data/FFM_OBW2018Stich_Stadtteile_WBZ-UTF8-TEST.csv',
       // mapUrl: 'http://dynamic.faz.net/red/2018/ob_wahl/data/ffmwahlbezirke.geojson', 
       // mapUrl: 'data/ffmwahlbezirke.geojson',
-      mapUrl: 'data/Wahlbezirke2017.geojson',
+      mapUrl: 'data/ffmstadtbezirkewahlen.geojson',
       data: null,
       map: null,
       category: 0,
@@ -123,8 +123,8 @@ export default {
   watch: {
     data () {
       this.map.features.forEach(f => {
-        f.properties.data = this.data.find(d => d.WkrNr === +f.properties.WBZ_Name.replace('-', '')) || {}
-        f.properties.id = +f.properties.WBZ_Name.replace('-', '')
+        f.properties.data = this.data.find(d => d.WkrNr === +f.properties.STB_Name.replace('-', '')) || {}
+        f.properties.id = +f.properties.STB_Name.replace('-', '')
       })
     }
   },
