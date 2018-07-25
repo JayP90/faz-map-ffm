@@ -1,0 +1,122 @@
+id;name;einwohner;stadtteil;ortsbezirk
+10;Altstadt;3475;Altstadt;Innenstadt I
+40;Innenstadt;780;Innenstadt;Innenstadt I
+50;Innenstadt;;Innenstadt;Innenstadt I
+60;Innenstadt;1642;Innenstadt;Innenstadt I
+70;Innenstadt;1622;Innenstadt;Innenstadt I
+80;Innenstadt;2533;Innenstadt;Innenstadt I
+90;Bahnhofsviertel;2125;Bahnhofsviertel;Innenstadt I
+100;Westend-Süd;3448;Westend-Süd;Innenstadt II
+110;Westend-Süd;3100;Westend-Süd;Innenstadt II
+120;Nordend-West;6881;Nordend-West;Innenstadt III
+130;Nordend-Ost;5651;Nordend-Ost;Innenstadt III
+140;Ostend;7720;Ostend;Bornheim/Ostend
+151;Gutleutviertel;5843;Gutleutviertel;Innenstadt I
+152;Gallus;956;Gallus;Innenstadt I
+153;Gallus;3126;Gallus;Innenstadt I
+154;Gallus;3663;Gallus;Innenstadt I
+161;Gallus;4290;Gallus;Innenstadt I
+162;Gallus;6475;Gallus;Innenstadt I
+163;Bockenheim;3729;Bockenheim;Innenstadt II
+164;Gallus;1576;Gallus;Innenstadt I
+165;Gallus;6630;Gallus;Innenstadt I
+170;Westend-Süd;4731;Westend-Süd;Innenstadt II
+180;Westend-Süd;6009;Westend-Süd;Innenstadt II
+191;Westend-Nord;4943;Westend-Nord;Innenstadt II
+192;Westend-Nord;3911;Westend-Nord;Innenstadt II
+201;Nordend-West;4141;Nordend-West;Innenstadt III
+202;Nordend-West;1883;Nordend-West;Innenstadt III
+203;Nordend-West;5895;Nordend-West;Innenstadt III
+211;Nordend-West;4402;Nordend-West;Innenstadt III
+212;Nordend-West;5121;Nordend-West;Innenstadt III
+213;Nordend-West;485;Nordend-West;Innenstadt III
+221;Nordend-Ost;5169;Nordend-Ost;Innenstadt III
+222;Nordend-Ost;7334;Nordend-Ost;Innenstadt III
+230;Nordend-Ost;5315;Nordend-Ost;Innenstadt III
+240;Bornheim;3150;Bornheim;Bornheim/Ostend
+251;Ostend;5887;Ostend;Bornheim/Ostend
+252;Ostend;9216;Ostend;Bornheim/Ostend
+261;Osthafen;4132;Ostend;Bornheim/Ostend
+262;Riederwald;4911;Riederwald;Ost
+271;Bornheim;3970;Bornheim;Bornheim/Ostend
+272;Bornheim;9643;Bornheim;Bornheim/Ostend
+281;Bornheim;5762;Bornheim;Bornheim/Ostend
+282;Bornheim;5303;Bornheim;Bornheim/Ostend
+290;Bornheim;2506;Bornheim;Bornheim/Ostend
+300;Sachsenhausen-Nord;3889;Sachsenhausen-Nord;Süd
+321;Sachsenhausen-Nord;4773;Sachsenhausen-Nord;Süd
+322;Sachsenhausen-Nord;8822;Sachsenhausen-Nord;Süd
+323;Sachsenhausen-Süd;12249;Sachsenhausen-Süd;Süd
+324;Sachsenhausen-Nord;7323;Sachsenhausen-Nord;Süd
+325;Sachsenhausen-Süd;418;Sachsenhausen-Süd;Süd
+326;Sachsenhausen-Fritz-Kissel-Siedlung;4441;Sachsenhausen-Süd;Süd
+328;Unterwald;211;Flughafen;Süd
+329;Flughafen;;Flughafen;Süd
+331;Sachsenhausen-Nord;5567;Sachsenhausen-Nord;Süd
+332;Sachsenhausen-Süd;9006;Sachsenhausen-Süd;Süd
+341;Bockenheim;5019;Bockenheim;Innenstadt II
+342;Bockenheim;4634;Bockenheim;Innenstadt II
+343;Bockenheim;2031;Bockenheim;Mitte-West
+350;Bockenheim;6969;Bockenheim;Innenstadt II
+361;Bockenheim;5443;Bockenheim;Innenstadt II
+362;Bockenheim;6915;Bockenheim;Innenstadt II
+371;Niederrad-Nord;10909;Niederrad;Süd
+372;Niederrad-Süd;12045;Niederrad;Süd
+380;Oberrad;12828;Oberrad;Süd
+390;Seckbach;10194;Seckbach;Ost
+401;Ršdelheim-Ost;9593;Ršdelheim;Mitte-West
+402;Ršdelheim-West;8248;Ršdelheim;Mitte-West
+410;Hausen;7178;Hausen;Mitte-West
+422;Siedlung Praunheim;6303;Praunheim;Mitte-West
+423;Siedlung Praunheim-Westhausen;2413;Praunheim;Mitte-West
+424;Praunheim-Süd;1284;Praunheim;Mitte-West
+425;Alt-Praunheim;2298;Praunheim;Mitte-West
+426;Praunheim-Nord;3463;Praunheim;Nord-West
+431;Heddernheim-Ost;7304;Heddernheim;Nord-West
+432;Heddernheim-West;9139;Heddernheim;Nord-West
+441;Ginnheim;16444;Ginnheim;Mitte-Nord
+442;Dornbusch-West;6450;Dornbusch;Mitte-Nord
+451;Eschersheim-Nord;6785;Eschersheim;Mitte-Nord
+452;Eschersheim-Süd;8023;Eschersheim;Mitte-Nord
+461;Eckenheim;14277;Eckenheim;Nord-Ost
+462;Dornbusch-Ost;9645;Dornbusch;Mitte-Nord
+463;Dornbusch-Ost;2416;Dornbusch;Mitte-Nord
+470;Preungesheim;13568;Preungesheim;Nord-Ost
+481;Niederursel-Ost;7230;Niederursel;Nord-West
+482;Niederursel-West;7380;Niederursel;Nord-West
+483;Riedwiese-Mertonviertel;1784;Niederursel;Nord-West
+484;Campus Niederursel;;Niederursel;Nord-West
+491;Bonames;6362;Bonames;Nord-Ost
+492;Frankfurter Berg;7149;Frankfurter Berg;Nord-Ost
+500;Berkersheim;3400;Berkersheim;Nord-Ost
+510;Fechenheim-Nord;9141;Fechenheim;Ost
+520;Fechenheim-Süd;6920;Fechenheim;Ost
+531;Schwanheim;8919;Schwanheim;West
+532;Goldstein-West;11243;Schwanheim;West
+533;Goldstein-Ost;;Schwanheim;Süd
+541;Griesheim-Ost;5253;Griesheim;West
+542;Griesheim-Ost;7604;Griesheim;West
+551;Griesheim-West;3278;Griesheim;West
+552;Griesheim-West;6513;Griesheim;West
+561;Nied-Süd;9952;Nied;West
+562;Nied-Nord;7877;Nied;West
+570;Hšchst-West;6458;Hšchst;West
+580;Hšchst-Ost;3739;Hšchst;West
+591;Hšchst-Süd;3691;Hšchst;West
+592;Hšchst-Süd;;Hšchst;West
+601;Sindlingen-Süd;5159;Sindlingen;West
+602;Sindlingen-Nord;3873;Sindlingen;West
+604;Zeilsheim-Ost;2106;Zeilsheim;West
+611;Zeilsheim-Süd;4457;Zeilsheim;West
+612;Zeilsheim-Nord;5421;Zeilsheim;West
+621;Unterliederbach-Mitte;7513;Unterliederbach;West
+622;Unterliederbach-Ost;6571;Unterliederbach;West
+623;Unterliederbach-West;266;Unterliederbach;West
+631;Sossenheim-West;8367;Sossenheim;West
+632;Sossenheim-Ost;7486;Sossenheim;West
+640;Nieder-Erlenbach;4629;Nieder-Erlenbach;Nieder-Erlenbach
+650;Kalbach;5036;Kalbach-Riedberg;Kalbach/Riedberg
+651;Riedberg;3446;Kalbach-Riedberg;Kalbach/Riedberg
+660;Harheim;4294;Harheim;Harheim
+670;Nieder-Eschbach;11499;Nieder-Eschbach;Nieder-Eschbach
+680;Bergen-Enkheim;17954;Bergen-Enkheim;Bergen-Enkheim
