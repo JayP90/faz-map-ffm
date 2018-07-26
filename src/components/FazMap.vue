@@ -1,14 +1,14 @@
 <template>
   <div class="faz-map">
     <faz-select :map="map" :options="categories" :search="true" value-key="id" label-key="displayName" v-model="category"></faz-select>
-    <choropleth v-if="map" :map="map" :category="categories[category]" :parties="parties" v-model="hover"></choropleth>
+    <choropleth v-if="map" :map="map" :category="categories[category - 1]" :parties="parties" v-model="hover"></choropleth>
     <transition name="fade">
-      <div class="tooltip" v-if="hover" :style="{'left': hover.x + 'px', 'top': hover.y + 'px'}">
+      <div class="tooltip" v-if="hover" :style="{'left': hover.x + 100 + 'px', 'top': hover.y + -50 + 'px'}">
         {{hover.data.region}}<br>
         <ul>
           <li v-for="party in parties">
-            <div :style="{ background: party.color, width: Math.round(hover.data[party.name]*100) + '%' }" style="height:10px"></div>
-            {{party.displayName}}: {{ Math.round(hover.data[party.name]*100)}}%
+            <div :style="{ background: party.color, width: Math.round(hover.data[party.name]) + '%' }" style="height:10px"></div>
+            {{party.displayName}}: {{ hover.data[party.name] }}€
           </li>
         </ul>
       </div>
@@ -34,24 +34,24 @@ export default {
   data () {
     return {
       // dataUrl: 'http://dynamic.faz.net/red/2018/ob_wahl/data/FFM_OBW2018_Stadtteile_WBZ.csv', 
-      dataUrl: 'data/FFM_OBW2018_Stadtteile_WBZ_offiziell.csv',
+      dataUrl: 'data/empirica_miete.csv',
       // dataUrl: 'data/FFM_OBW2018Stich_Stadtteile_WBZ-UTF8-TEST.csv',
       // mapUrl: 'http://dynamic.faz.net/red/2018/ob_wahl/data/ffmwahlbezirke.geojson', 
       // mapUrl: 'data/ffmwahlbezirke.geojson',
       mapUrl: 'data/ffmstadtbezirkewahlen.geojson',
       data: null,
       map: null,
-      category: 0,
+      category: 1,
       hover: null,
-      baseColor: '#F3F3F3',
+      baseColor: '#ccc',
       maxValues: {},
       parties: [{
-        name: 'Dr. Weyland,Bernadette',
-        displayName: 'Bernadette Weyland, CDU',
-        color: '#111111'
+        name: 'Miete pro qm 2012',
+        displayName: 'Miete pro qm 2012',
+        color: '#c51d1e'
       }, {
-        name: 'Feldmann,Peter',
-        displayName: 'Peter Feldmann, SPD',
+        name: 'Miete pro qm 2018',
+        displayName: 'Miete pro qm 2018',
         color: '#c51d1e'
       }/*, {
         name: 'Dr. Eskandari-Grünberg,Nargess',
@@ -70,19 +70,18 @@ export default {
   },
   methods: {
     parseCsv (csv) {
-      var dsv = d3.dsvFormat(";")
+      var dsv = d3.dsvFormat(",")
 
       return dsv.parse(csv, (v, j) => {
-        if(!v.WkrNr || +v.WkrNr === 0) return
+        if(!v.id || +v.id === 0) return
 
         let data = {
-          WkrNr: +v.WkrNr,
-          region: v.Wahlkreis
+          id: +v.id,
+          region: v.Stadtbezirk
         }
         let max = {val: null, id: null}
         this.parties.forEach((d, i) => {
-          data[d.name] = +v[d.name] / +v['Gültige Stimmen'].replace('.', '')
-          // data[d.name] = +v[d.name]
+          data[d.name] = !isNaN(parseFloat(v[d.name])) ? parseFloat(v[d.name].replace(',', '.')) : 0
 
           if (max.val === null || max.val < data[d.name]) {
             max.val = data[d.name]
@@ -95,7 +94,7 @@ export default {
         })
         data['Stärkste Kraft'] = max.id
 
-        //console.log(data)
+        // console.log(data)
 
         return data
       })
@@ -114,6 +113,7 @@ export default {
       var dsv = d3.dsvFormat(";");
       // console.log('results: ', results[0])
       this.data = this.parseCsv( results[0] )
+
       this.maxValues = this.parties.map(d => this.ceil(d.max))
       // console.log('map: ', this.map)
       //console.log('data: ', this.data)
@@ -123,22 +123,24 @@ export default {
   watch: {
     data () {
       this.map.features.forEach(f => {
-        f.properties.data = this.data.find(d => d.WkrNr === +f.properties.STB_Name.replace('-', '')) || {}
-        f.properties.id = +f.properties.STB_Name.replace('-', '')
+        f.properties.data = this.data.find(d => {
+          return +d.id === +f.properties.TXT_STB
+        }) || {}
+        f.properties.id = +f.properties.TXT_STB
       })
     }
   },
   computed: {
     categories () {
-      let categories = [{
-        name: 'Stärkste Kraft',
-        displayName: 'Stärkste Kraft',
-        id: 0,
-        legend: 'ordinal',
-        categories: this.parties.map((d, i) => { return {label: d.name, val: i} }),
-        domain: this.parties.map((d, i) => i),
-        colorRange: this.parties.map((d) => d.color)
-      }]
+      // let categories = [{
+      //   name: 'Stärkste Kraft',
+      //   displayName: 'Stärkste Kraft',
+      //   id: 0,
+      //   legend: 'ordinal',
+      //   categories: this.parties.map((d, i) => { return {label: d.name, val: i} }),
+      //   domain: this.parties.map((d, i) => i),
+      //   colorRange: this.parties.map((d) => d.color)
+      // }]
 
       let parties = this.parties.map((d, i) => {
         return {
@@ -151,7 +153,8 @@ export default {
         }
       })
 
-      return categories.concat(parties)
+      // return categories.concat(parties)
+      return parties
     }
   }
 }

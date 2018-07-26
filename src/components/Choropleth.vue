@@ -114,12 +114,13 @@ export default {
     },
     mouseover (polygon) {
       let centroid = this.path.centroid(polygon.feature)
+      polygon.feature.properties.data.region = polygon.feature.properties.STB_Name
 
       this.$emit('input', {
         data: polygon.feature.properties.data,
         x: Math.round(centroid[0]),
         y: Math.round(centroid[1]),
-        id: +polygon.feature.properties.WBZ_Name.replace('-', '')
+        id: +polygon.feature.properties.TXT_STB
       })
     },
     mouseleave (polygon) {
@@ -142,7 +143,7 @@ export default {
     hoverPath () {
       if (this.value == null) return null
       return this.polygons.find(p => {
-        return +p.feature.properties.WBZ_Name.replace('-', '') === this.value.id
+        return +p.feature.properties.TXT_STB === this.value.id
       }).path
     },
     gradient () {
@@ -158,7 +159,6 @@ export default {
       })
     },
     legendLabels () {
-      console.log(this.category.domain)
       return [{
         translate: 'translate(16, 0)',
         text: '0%'
