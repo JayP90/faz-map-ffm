@@ -58,23 +58,28 @@ export default {
       config: [{
         name: 'Kaufpreis pro qm 2012 etw',
         displayName: 'Kaufpreis pro qm 2012 etw',
-        color: '#c51d1e'
+        color: '#c51d1e',
+        unit: '€'
       }, {
         name: 'Kaufpreis pro qm 2018 etw',
         displayName: 'Kaufpreis pro qm 2018 etw',
-        color: '#c51d1e'
+        color: '#c51d1e',
+        unit: '€'
       }, {
         name: 'Kaufpreis pro qm 2012 ezfh',
         displayName: 'Kaufpreis pro qm 2012 ezfh',
-        color: '#0c9941'
+        color: '#0c9941',
+        unit: '€'
       }, {
         name: 'Kaufpreis pro qm 2018 ezfh',
         displayName: 'Kaufpreis pro qm 2018 ezfh',
-        color: '#bb4894'
+        color: '#bb4894',
+        unit: '€'
       }, {
         name: 'Wohnfläche 2018 ezfh',
         displayName: 'Wohnfläche 2018 ezfh',
-        color: '#2b7ab4'
+        color: '#2b7ab4',
+        unit: 'qm'
       }]
     }
   },
@@ -92,7 +97,9 @@ export default {
         let max = {val: null, id: null}
         let min = {val: null, id: null}
         this.config.forEach((d, i) => {
-          data[d.name] = !isNaN(parseFloat(v[d.name])) ? parseFloat(v[d.name].replace('.', '')) : 0
+          data[d.name] = !isNaN(parseFloat(v[d.name])) ? parseFloat(v[d.name]) : v[d.name]
+
+          console.log(data[d.name])
 
           if (max.val === null || max.val < data[d.name]) {
             max.val = data[d.name]
@@ -103,16 +110,18 @@ export default {
             d.max = data[d.name]
           }
 
-          if (min.val === null || min.val > data[d.name]) {
+          if (min.val === null && data[d.name] != -1 || min.val > data[d.name] && data[d.name] != -1) {
             min.val = data[d.name]
             min.id = i
           }
 
-          if (d.min == null || d.min > data[d.name]) {
+          if (d.min == null && data[d.name] != -1 || d.min > data[d.name] && data[d.name] != -1) {
             d.min = data[d.name]
           }
         })
         data['Stärkste Kraft'] = max.id
+
+        console.log(data)
 
         return data
       })
@@ -135,8 +144,13 @@ export default {
       // console.log('results: ', results[0])
       this.data = this.parseCsv( results[0] )
 
+      console.log(this.data)
+
       this.maxValues = this.config.map(d => this.ceil(d.max))
-      this.minValues = this.config.map(d => this.floor(d.max))
+      this.minValues = this.config.map(d => {
+        console.log(d)
+        return this.floor(d.min)
+      })
 
       console.log(this.maxValues)
       console.log(this.minValues)
@@ -172,10 +186,11 @@ export default {
         return {
           name: d.name,
           displayName: d.displayName,
+          unit: d.unit,
           id: i + 1,
           type: 'party',
-          domain: [0, this.maxValues[i]],
-          colorRange: [this.baseColor, d.color]
+          domain: [this.minValues[i], this.maxValues[i]],
+          colorRange: [d3.hsl(d.color).brighter(2), d.color]
         }
       })
 

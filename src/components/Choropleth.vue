@@ -12,7 +12,7 @@
         <path v-if="hoverPath != null" class="polygon hover" :d="hoverPath"></path>
       </g>
     </svg>
-    <!-- <svg class="legend" v-if="category.legend !== 'ordinal'" width="300" height="48">
+    <svg class="legend" v-if="category.legend !== 'ordinal'" width="300" height="48">
       <g>
         <rect v-for="color in gradient" :x="color.x" y="8" :width="color.width" :height="8" :fill="color.fill"></rect>
         <g class="legend-labels" v-for="label in legendLabels" :transform="label.translate">
@@ -28,7 +28,7 @@
           <span class="legend-name">{{party.displayName}}</span>
         </li>
       </ul>
-    </div> -->
+    </div>
   </div>
 </template>
 
@@ -108,8 +108,8 @@ export default {
       })
     },
     getFill (polygon) {
-      if( polygon.feature.properties.data[this.category.name] === undefined) {
-        return '#ddd'
+      if( polygon.feature.properties.data[this.category.name] === undefined || typeof polygon.feature.properties.data[this.category.name] === 'string') {
+        return 'url(#nodata)'
       }
       return this.colorScale(polygon.feature.properties.data[this.category.name])
     },
@@ -147,24 +147,26 @@ export default {
       }).path
     },
     gradient () {
-      let stepSize = (this.category.domain ? this.category.domain[1] : this.domain[1]) < 0.15 ? 0.025 : 0.05
-      let steps = (this.category.domain ? this.category.domain[1] : this.domain[1]) / stepSize
+      // let stepSize = (this.category.domain ? this.category.domain[1] : this.domain[1]) < 0.15 ? 0.025 : 0.05
+      // let steps = (this.category.domain ? this.category.domain[1] : this.domain[1]) / stepSize
+      let stepSize = (this.category.domain[1] - this.category.domain[0])/20
+      let steps = 20
 
       return '.'.repeat(steps).split('').map((d, i) => {
         return {
-          fill: this.colorScale(stepSize * i),
-          x: 16 + (i / steps) * (300 - 32),
-          width: (300 - 32) / steps
+          fill: this.colorScale(this.category.domain[0] + (stepSize * i)),
+          x: 20 + (i / steps) * (300 - 40),
+          width: (300 - 40) / steps
         }
       })
     },
     legendLabels () {
       return [{
-        translate: 'translate(16, 0)',
-        text: '0%'
+        translate: 'translate(20, 0)',
+        text: (this.category.domain ? this.category.domain[0] : this.domain[0]) + this.category.unit
       }, {
-        translate: `translate(${300 - 16}, 0)`,
-        text: d3.format('.0%')(this.category.domain ? this.category.domain[1] : this.domain[1])
+        translate: `translate(${300 - 20}, 0)`,
+        text: (this.category.domain ? this.category.domain[1] : this.domain[1]) + this.category.unit
       }]
     }
   }
