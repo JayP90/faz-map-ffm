@@ -1,7 +1,7 @@
 <template>
   <div class="faz-map">
     <faz-select :map="map" :options="categories" :search="true" value-key="id" label-key="displayName" v-model="category"></faz-select>
-    <choropleth v-if="map" :map="map" :category="categories[category - 1]" :parties="parties" v-model="hover"></choropleth>
+    <choropleth v-if="map" :geojsonConfig="geojsonConfig" :map="map" :category="categories[category - 1]" :parties="parties" v-model="hover"></choropleth>
     <transition name="fade">
       <div class="tooltip" v-if="hover" :style="{'left': hover.x + 100 + 'px', 'top': hover.y + -50 + 'px'}">
         {{hover.data.region}}<br>
@@ -34,38 +34,47 @@ export default {
   data () {
     return {
       // dataUrl: 'http://dynamic.faz.net/red/2018/ob_wahl/data/FFM_OBW2018_Stadtteile_WBZ.csv', 
-      dataUrl: 'data/empirica_miete.csv',
+      dataUrl: 'data/empirica_etw_ezfh.csv',
       // dataUrl: 'data/FFM_OBW2018Stich_Stadtteile_WBZ-UTF8-TEST.csv',
       // mapUrl: 'http://dynamic.faz.net/red/2018/ob_wahl/data/ffmwahlbezirke.geojson', 
       // mapUrl: 'data/ffmwahlbezirke.geojson',
-      mapUrl: 'data/ffmstadtbezirkewahlen.geojson',
+      mapUrl: 'data/ffmstadtteilewahlen.geojson',
       data: null,
       map: null,
       category: 1,
       hover: null,
       baseColor: '#ccc',
       maxValues: {},
-      parties: [{
-        name: 'Miete pro qm 2012',
-        displayName: 'Miete pro qm 2012',
+      minValues: {},
+      geojsonConfig: {
+        propertyId: 'STTLNR',
+        propertyName: 'STTLNAME'
+      },
+      dataConfig: {
+        displayName: 'Stadtteil', // name in data to be displayed at geojson feature
+        id: 'id' // id in data to match geojson feature
+      },
+      config: [{
+        name: 'Kaufpreis pro qm 2012 etw',
+        displayName: 'Kaufpreis pro qm 2012 etw',
         color: '#c51d1e'
       }, {
-        name: 'Miete pro qm 2018',
-        displayName: 'Miete pro qm 2018',
+        name: 'Kaufpreis pro qm 2018 etw',
+        displayName: 'Kaufpreis pro qm 2018 etw',
         color: '#c51d1e'
-      }/*, {
-        name: 'Dr. Eskandari-Grünberg,Nargess',
-        displayName: 'Nargess Eskandari-Grünberg, Grüne',
+      }, {
+        name: 'Kaufpreis pro qm 2012 ezfh',
+        displayName: 'Kaufpreis pro qm 2012 ezfh',
         color: '#0c9941'
       }, {
-        name: 'Wißler,Janine',
-        displayName: 'Janine Wißler, Linke',
+        name: 'Kaufpreis pro qm 2018 ezfh',
+        displayName: 'Kaufpreis pro qm 2018 ezfh',
         color: '#bb4894'
       }, {
-        name: 'Stein,Volker',
-        displayName: 'Volker Stein, unabhängig',
+        name: 'Wohnfläche 2018 ezfh',
+        displayName: 'Wohnfläche 2018 ezfh',
         color: '#2b7ab4'
-      }*/]
+      }]
     }
   },
   methods: {
@@ -76,12 +85,13 @@ export default {
         if(!v.id || +v.id === 0) return
 
         let data = {
-          id: +v.id,
-          region: v.Stadtbezirk
+          id: +v[this.dataConfig.id],
+          region: v[this.dataConfig.displayName]
         }
         let max = {val: null, id: null}
-        this.parties.forEach((d, i) => {
-          data[d.name] = !isNaN(parseFloat(v[d.name])) ? parseFloat(v[d.name].replace(',', '.')) : 0
+        let min = {val: null, id: null}
+        this.config.forEach((d, i) => {
+          data[d.name] = !isNaN(parseFloat(v[d.name])) ? parseFloat(v[d.name].replace('.', '')) : 0
 
           if (max.val === null || max.val < data[d.name]) {
             max.val = data[d.name]
@@ -91,16 +101,26 @@ export default {
           if (d.max == null || d.max < data[d.name]) {
             d.max = data[d.name]
           }
+
+          if (min.val === null || min.val > data[d.name]) {
+            min.val = data[d.name]
+            min.id = i
+          }
+
+          if (d.min == null || d.min > data[d.name]) {
+            d.min = data[d.name]
+          }
         })
         data['Stärkste Kraft'] = max.id
-
-        // console.log(data)
 
         return data
       })
     },
     ceil (val) {
       return Math.ceil(val / 0.05) * 0.05
+    },
+    floor (val) {
+      return Math.floor(val / 0.05) * 0.05
     }
   },
   created () {
@@ -114,7 +134,12 @@ export default {
       // console.log('results: ', results[0])
       this.data = this.parseCsv( results[0] )
 
-      this.maxValues = this.parties.map(d => this.ceil(d.max))
+      this.maxValues = this.config.map(d => this.ceil(d.max))
+      this.minValues = this.config.map(d => this.floor(d.max))
+
+      console.log(this.maxValues)
+      console.log(this.minValues)
+
       // console.log('map: ', this.map)
       //console.log('data: ', this.data)
       // console.log('maxValues: ', this.maxValues)
@@ -124,9 +149,9 @@ export default {
     data () {
       this.map.features.forEach(f => {
         f.properties.data = this.data.find(d => {
-          return +d.id === +f.properties.TXT_STB
+          return +d.id === +f.properties[this.geojsonConfig.propertyId]
         }) || {}
-        f.properties.id = +f.properties.TXT_STB
+        f.properties.id = +f.properties[this.geojsonConfig.propertyId]
       })
     }
   },
@@ -137,12 +162,12 @@ export default {
       //   displayName: 'Stärkste Kraft',
       //   id: 0,
       //   legend: 'ordinal',
-      //   categories: this.parties.map((d, i) => { return {label: d.name, val: i} }),
-      //   domain: this.parties.map((d, i) => i),
-      //   colorRange: this.parties.map((d) => d.color)
+      //   categories: this.config.map((d, i) => { return {label: d.name, val: i} }),
+      //   domain: this.config.map((d, i) => i),
+      //   colorRange: this.config.map((d) => d.color)
       // }]
 
-      let parties = this.parties.map((d, i) => {
+      let list = this.config.map((d, i) => {
         return {
           name: d.name,
           displayName: d.displayName,
@@ -154,7 +179,7 @@ export default {
       })
 
       // return categories.concat(parties)
-      return parties
+      return list
     }
   }
 }

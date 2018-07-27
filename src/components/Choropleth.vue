@@ -12,7 +12,7 @@
         <path v-if="hoverPath != null" class="polygon hover" :d="hoverPath"></path>
       </g>
     </svg>
-    <svg class="legend" v-if="category.legend !== 'ordinal'" width="300" height="48">
+    <!-- <svg class="legend" v-if="category.legend !== 'ordinal'" width="300" height="48">
       <g>
         <rect v-for="color in gradient" :x="color.x" y="8" :width="color.width" :height="8" :fill="color.fill"></rect>
         <g class="legend-labels" v-for="label in legendLabels" :transform="label.translate">
@@ -28,7 +28,7 @@
           <span class="legend-name">{{party.displayName}}</span>
         </li>
       </ul>
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -54,6 +54,7 @@ d3.formatDefaultLocale({
 export default {
   name: 'choropleth',
   props: {
+    geojsonConfig: Object,
     map: Object,
     parties: Array,
     domain: {
@@ -114,13 +115,12 @@ export default {
     },
     mouseover (polygon) {
       let centroid = this.path.centroid(polygon.feature)
-      polygon.feature.properties.data.region = polygon.feature.properties.STB_Name
 
       this.$emit('input', {
         data: polygon.feature.properties.data,
         x: Math.round(centroid[0]),
         y: Math.round(centroid[1]),
-        id: +polygon.feature.properties.TXT_STB
+        id: +polygon.feature.properties[this.geojsonConfig.propertyId]
       })
     },
     mouseleave (polygon) {
@@ -143,7 +143,7 @@ export default {
     hoverPath () {
       if (this.value == null) return null
       return this.polygons.find(p => {
-        return +p.feature.properties.TXT_STB === this.value.id
+        return +p.feature.properties[this.geojsonConfig.propertyId] === this.value.id
       }).path
     },
     gradient () {
