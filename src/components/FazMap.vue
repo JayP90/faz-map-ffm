@@ -5,6 +5,7 @@
     <transition name="fade">
       <div class="tooltip" v-if="hover" :style="{'left': hover.x + 100 + 'px', 'top': hover.y + -50 + 'px'}">
         {{hover.data.region}}<br>
+        {{hover.data.id}}<br>
         <ul>
           <li v-for="party in parties">
             <div :style="{ background: party.color, width: Math.round(hover.data[party.name]) + '%' }" style="height:10px"></div>
