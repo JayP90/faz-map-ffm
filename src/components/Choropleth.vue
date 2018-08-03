@@ -84,6 +84,15 @@ export default {
     }
   },
   methods: {
+    format (val) {
+      let DE = d3.formatLocale({
+        "decimal": ",",
+        "thousands": ".",
+        "grouping": [3],
+        "currency": ["", "€"]
+      })
+      return DE.format('.4g')(val)
+    },
     fitProjection () {
       let width = this.$refs.svg.getBoundingClientRect().width
       let height = this.maxHeight
@@ -131,8 +140,6 @@ export default {
     this.fitProjection()
     window.addEventListener('resize', debounce(this.fitProjection, 250))
   },
-  watch: {
-  },
   computed: {
     path () {
       return d3.geoPath().projection(this.projection)
@@ -163,10 +170,10 @@ export default {
     legendLabels () {
       return [{
         translate: 'translate(20, 0)',
-        text: (this.category.domain ? this.category.domain[0] : this.domain[0]) + this.category.unit
+        text: this.format((this.category.domain ? this.category.domain[0] : this.domain[0])) + this.category.unit
       }, {
         translate: `translate(${300 - 20}, 0)`,
-        text: (this.category.domain ? this.category.domain[1] : this.domain[1]) + this.category.unit
+        text: this.format((this.category.domain ? this.category.domain[1] : this.domain[1])) + this.category.unit
       }]
     }
   }

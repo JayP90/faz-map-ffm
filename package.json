@@ -22,7 +22,8 @@
     "d3": "^4.8.0",
     "debounce": "^1.0.2",
     "unfetch": "^2.1.2",
-    "vue": "^2.0.1"
+    "vue": "^2.0.1",
+    "vue-slider-component": "^2.7.5"
   },
   "devDependencies": {
     "babel-core": "^6.0.0",

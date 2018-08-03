@@ -1,15 +1,26 @@
 <template>
   <div class="faz-map">
-    <faz-select :map="map" :options="categories" :search="true" value-key="id" label-key="displayName" v-model="category"></faz-select>
-    <choropleth v-if="map" :geojsonConfig="geojsonConfig" :map="map" :category="categories[category - 1]" :parties="parties" v-model="hover"></choropleth>
+    <faz-select :map="map" :options="categories" :search="true" value-key="id" label-key="displayName" v-model="category" @input="lastSelected = 'select'"></faz-select>
+    <div @click="next()">next</div>
+    <div @click="prev()">prev</div>
+    <vue-slider
+          :min="0"
+          :max="10"
+          :interval="1"
+          :piecewise="true"
+          :tooltip="false"
+          v-model="sliderVal">
+    </vue-slider>
+    {{ sliderVal }}
+    <choropleth v-if="map" :geojsonConfig="geojsonConfig" :map="map" :category="displayData" :parties="config" v-model="hover"></choropleth>
     <transition name="fade">
       <div class="tooltip" v-if="hover" :style="{'left': hover.x + 100 + 'px', 'top': hover.y + -50 + 'px'}">
         {{hover.data.region}}<br>
         {{hover.data.id}}<br>
         <ul>
-          <li v-for="party in parties">
-            <div :style="{ background: party.color, width: Math.round(hover.data[party.name]) + '%' }" style="height:10px"></div>
-            {{party.displayName}}: {{ hover.data[party.name] }}€
+          <li v-for="item in config">
+            <div :style="{ background: item.color, width: Math.round(hover.data[item.name]) + '%' }" style="height:10px"></div>
+            {{item.displayName}}: {{ hover.data[item.name] }}€
           </li>
         </ul>
       </div>
@@ -22,6 +33,7 @@ import fetch from 'unfetch'
 //import {csvParse} from 'd3'
 //import {dsvParse} from 'd3'
 import * as d3 from 'd3'
+import vueSlider from 'vue-slider-component';
 
 import Choropleth from './Choropleth.vue'
 import FazSelect from './FazSelect.vue'
@@ -30,12 +42,13 @@ export default {
   name: 'faz-map',
   components: {
     Choropleth,
-    FazSelect
+    FazSelect,
+    vueSlider
   },
   data () {
     return {
       // dataUrl: 'http://dynamic.faz.net/red/2018/ob_wahl/data/FFM_OBW2018_Stadtteile_WBZ.csv', 
-      dataUrl: 'data/empirica_etw_ezfh.csv',
+      dataUrl: 'data/empirica_data.csv',
       // dataUrl: 'data/FFM_OBW2018Stich_Stadtteile_WBZ-UTF8-TEST.csv',
       // mapUrl: 'http://dynamic.faz.net/red/2018/ob_wahl/data/ffmwahlbezirke.geojson', 
       // mapUrl: 'data/ffmwahlbezirke.geojson',
@@ -47,6 +60,7 @@ export default {
       baseColor: '#ccc',
       maxValues: {},
       minValues: {},
+      sliderVal: 0,
       geojsonConfig: {
         propertyId: 'STTLNR',
         propertyName: 'STTLNAME'
@@ -55,35 +69,137 @@ export default {
         displayName: 'Stadtteil', // name in data to be displayed at geojson feature
         id: 'id' // id in data to match geojson feature
       },
+      lastSelected: 'story',
+      currentStory: 0,
+      storyConfig: [{
+        name: 'Kaufpreis 2012 etw',
+      },
+      {
+        name: 'Kaufpreis 2012 ezfh',
+      },
+      {
+        name: 'Kaufpreis 2012 etw',
+      }],
       config: [{
         name: 'Kaufpreis pro qm 2012 etw',
         displayName: 'Kaufpreis pro qm 2012 etw',
         color: '#c51d1e',
         unit: '€'
-      }, {
+      },
+      {
+        name: 'Kaufpreis 2012 etw',
+        displayName: 'Kaufpreis 2012 etw',
+        color: '#c51d1e',
+        unit: '€'
+      },
+      {
+        name: 'Wohnfläche 2012 etw',
+        displayName: 'Wohnfläche 2012 etw',
+        color: '#c51d1e',
+        unit: '€'
+      },
+      {
         name: 'Kaufpreis pro qm 2018 etw',
         displayName: 'Kaufpreis pro qm 2018 etw',
         color: '#c51d1e',
+        unit: 'qm'
+      },
+      {
+        name: 'Kaufpreis 2018 etw',
+        displayName: 'Kaufpreis 2018 etw',
+        color: '#c51d1e',
         unit: '€'
-      }, {
+      },
+      {
+        name: 'Wohnfläche 2018 etw',
+        displayName: 'Wohnfläche 2018 etw',
+        color: '#c51d1e',
+        unit: 'qm'
+      },
+      {
         name: 'Kaufpreis pro qm 2012 ezfh',
         displayName: 'Kaufpreis pro qm 2012 ezfh',
-        color: '#0c9941',
+        color: '#c51d1e',
         unit: '€'
-      }, {
+      },
+      {
+        name: 'Kaufpreis 2012 ezfh',
+        displayName: 'Kaufpreis 2012 ezfh',
+        color: '#c51d1e',
+        unit: '€'
+      },
+      {
+        name: 'Wohnfläche 2012 ezfh',
+        displayName: 'Wohnfläche 2012 ezfh',
+        color: '#c51d1e',
+        unit: 'qm'
+      },
+      {
         name: 'Kaufpreis pro qm 2018 ezfh',
         displayName: 'Kaufpreis pro qm 2018 ezfh',
-        color: '#bb4894',
+        color: '#c51d1e',
         unit: '€'
-      }, {
+      },
+      {
+        name: 'Kaufpreis 2018 ezfh',
+        displayName: 'Kaufpreis 2018 ezfh',
+        color: '#c51d1e',
+        unit: '€'
+      },
+      {
         name: 'Wohnfläche 2018 ezfh',
         displayName: 'Wohnfläche 2018 ezfh',
-        color: '#2b7ab4',
+        color: '#c51d1e',
+        unit: 'qm'
+      },
+      {
+        name: 'Miete pro qm 2012',
+        displayName: 'Miete pro qm 2012',
+        color: '#c51d1e',
+        unit: '€'
+      },
+      {
+        name: 'Miete 2012',
+        displayName: 'Miete 2012',
+        color: '#c51d1e',
+        unit: '€'
+      },
+      {
+        name: 'Wohnfläche 2012',
+        displayName: 'Wohnfläche Miete 2012',
+        color: '#c51d1e',
+        unit: 'qm'
+      },
+      {
+        name: 'Miete pro qm 2018',
+        displayName: 'Miete pro qm 2018',
+        color: '#c51d1e',
+        unit: '€'
+      },
+      {
+        name: 'Miete 2018',
+        displayName: 'Miete 2018',
+        color: '#c51d1e',
+        unit: '€'
+      },
+      {
+        name: 'Wohnfläche 2018',
+        displayName: 'Wohnfläche Miete 2018',
+        color: '#c51d1e',
         unit: 'qm'
       }]
     }
   },
   methods: {
+    next () {
+      this.lastSelected = 'story'
+      this.currentStory = this.currentStory + 1
+      this.category = this.config.indexOf(this.config.find(item => item.name === this.storyConfig[this.currentStory].name))
+    },
+    prev () {
+      this.lastSelected = 'story'
+      this.currentStory = this.currentStory - 1
+    },
     parseCsv (csv) {
       var dsv = d3.dsvFormat(",")
 
@@ -97,31 +213,27 @@ export default {
         let max = {val: null, id: null}
         let min = {val: null, id: null}
         this.config.forEach((d, i) => {
-          data[d.name] = !isNaN(parseFloat(v[d.name])) ? parseFloat(v[d.name]) : v[d.name]
+          data[d.name] = !isNaN(parseFloat(v[d.name])) ? parseFloat(v[d.name]) : d.name
 
-          console.log(data[d.name])
-
-          if (max.val === null || max.val < data[d.name]) {
+          if ((max.val === null || max.val < data[d.name]) && typeof data[d.name] != 'string') {
             max.val = data[d.name]
             max.id = i
           }
 
-          if (d.max == null || d.max < data[d.name]) {
+          if ((d.max === undefined || d.max < data[d.name]) && typeof data[d.name] != 'string') {
             d.max = data[d.name]
           }
 
-          if (min.val === null && data[d.name] != -1 || min.val > data[d.name] && data[d.name] != -1) {
+          if ((min.val === null || min.val > data[d.name]) && typeof data[d.name] != 'string') {
             min.val = data[d.name]
             min.id = i
           }
 
-          if (d.min == null && data[d.name] != -1 || d.min > data[d.name] && data[d.name] != -1) {
+          if ((d.min === undefined || d.min > data[d.name]) && typeof data[d.name] != 'string') {
             d.min = data[d.name]
           }
         })
         data['Stärkste Kraft'] = max.id
-
-        console.log(data)
 
         return data
       })
@@ -141,23 +253,12 @@ export default {
     Promise.all(fetches).then((results) => {
       this.map = results[1]
       var dsv = d3.dsvFormat(";");
-      // console.log('results: ', results[0])
       this.data = this.parseCsv( results[0] )
-
-      console.log(this.data)
 
       this.maxValues = this.config.map(d => this.ceil(d.max))
       this.minValues = this.config.map(d => {
-        console.log(d)
         return this.floor(d.min)
       })
-
-      console.log(this.maxValues)
-      console.log(this.minValues)
-
-      // console.log('map: ', this.map)
-      //console.log('data: ', this.data)
-      // console.log('maxValues: ', this.maxValues)
     })
   },
   watch: {
@@ -171,6 +272,18 @@ export default {
     }
   },
   computed: {
+    displayData () {
+      if (this.lastSelected === 'story') {
+        return this.story[this.currentStory]
+      } else {
+        return this.categories[this.category - 1]
+      }
+    },
+    story () {
+      return this.storyConfig.map((d, i) => {
+        return {...d, ...this.categories.find(item => item.name === d.name)}
+      })
+    },
     categories () {
       // let categories = [{
       //   name: 'Stärkste Kraft',
