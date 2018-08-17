@@ -23,7 +23,8 @@
     "debounce": "^1.0.2",
     "unfetch": "^2.1.2",
     "vue": "^2.0.1",
-    "vue-slider-component": "^2.7.5"
+    "vue-slider-component": "^2.7.5",
+    "vue-svg-pan-zoom": "^0.1.0"
   },
   "devDependencies": {
     "babel-core": "^6.0.0",

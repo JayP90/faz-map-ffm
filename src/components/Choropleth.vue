@@ -1,17 +1,26 @@
 <template>
   <div class="choropleth">
-    <svg width="100%" :height="height" ref="svg">
-      <pattern id="nodata" width="6" height="6" patternUnits="userSpaceOnUse">
-        <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-          <polygon fill="#dddddd" points="0 0 3 0 6 3 6 6"></polygon>
-          <polygon fill="#dddddd" points="0 3 3 6 0 6"></polygon>
+    <SvgPanZoom 
+        style="width: 100%; height: 100%;"
+        :zoomEnabled="true"
+        :controlIconsEnabled="true"
+        :fit="false"
+        :center="false"
+        :onZoom="zoomChanged"
+    >
+      <svg width="100%" :height="height" ref="svg">
+        <pattern id="nodata" width="6" height="6" patternUnits="userSpaceOnUse">
+          <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+            <polygon fill="#dddddd" points="0 0 3 0 6 3 6 6"></polygon>
+            <polygon fill="#dddddd" points="0 3 3 6 0 6"></polygon>
+          </g>
+        </pattern>
+        <g class="map">
+          <path v-for="polygon in polygons" class="polygon" :d="polygon.path" :style="{strokeWidth: strokeWidthComputed + 'px'}" :fill="getFill(polygon)" @mouseover="mouseover(polygon)" @mouseleave="mouseleave()"></path>
+          <path v-if="hoverPath != null" :style="{strokeWidth: strokeWidthComputed * 3 + 'px'}" class="polygon hover" :d="hoverPath"></path>
         </g>
-      </pattern>
-      <g class="map">
-        <path v-for="polygon in polygons" class="polygon" :d="polygon.path" :fill="getFill(polygon)" @mouseover="mouseover(polygon)" @mouseleave="mouseleave()"></path>
-        <path v-if="hoverPath != null" class="polygon hover" :d="hoverPath"></path>
-      </g>
-    </svg>
+      </svg>
+    </SvgPanZoom>
     <svg class="legend" v-if="category.legend !== 'ordinal'" width="300" height="48">
       <g>
         <rect v-for="color in gradient" :x="color.x" y="8" :width="color.width" :height="8" :fill="color.fill"></rect>
@@ -23,9 +32,9 @@
     </svg>
     <div class="legend" v-else width="300" height="48">
       <ul>
-        <li v-for="party in parties.slice(0,2)">
-          <span class="legend-color" :style="{background: party.color}"></span>
-          <span class="legend-name">{{party.displayName}}</span>
+        <li v-for="c in ordinalLegend">
+          <span class="legend-color" :style="{background: c.color}"></span>
+          <span class="legend-name">{{c.name}}</span>
         </li>
       </ul>
     </div>
@@ -35,6 +44,7 @@
 <script>
 import * as d3 from 'd3'
 import debounce from 'debounce'
+import SvgPanZoom from 'vue-svg-pan-zoom'
 
 d3.formatDefaultLocale({
   'decimal': ',',
@@ -53,6 +63,9 @@ d3.formatDefaultLocale({
 
 export default {
   name: 'choropleth',
+  components: {
+    SvgPanZoom
+  },
   props: {
     geojsonConfig: Object,
     map: Object,
@@ -78,12 +91,17 @@ export default {
   },
   data () {
     return {
+      strokeWidth: .5,
+      zoomLevel: 1,
       projection: d3.geoMercator(),
       polygons: [],
       height: this.maxHeight
     }
   },
   methods: {
+    zoomChanged (zoom) {
+      this.zoomLevel = zoom
+    },
     format (val) {
       let DE = d3.formatLocale({
         "decimal": ",",
@@ -117,10 +135,12 @@ export default {
       })
     },
     getFill (polygon) {
-      if( polygon.feature.properties.data[this.category.name] === undefined || typeof polygon.feature.properties.data[this.category.name] === 'string') {
+      if( isNaN(polygon.feature.properties.data[this.category.name]) || polygon.feature.properties.data[this.category.name] === undefined || typeof polygon.feature.properties.data[this.category.name] === 'string') {
         return 'url(#nodata)'
       }
-      return this.colorScale(polygon.feature.properties.data[this.category.name])
+      let a = this.category.domain.find(item => polygon.feature.properties.data[this.category.name] < item)
+      return this.colorScale(a || this.category.domain[this.category.domain.length - 1])
+      // return this.colorScale(polygon.feature.properties.data[this.category.name])
     },
     mouseover (polygon) {
       let centroid = this.path.centroid(polygon.feature)
@@ -141,6 +161,17 @@ export default {
     window.addEventListener('resize', debounce(this.fitProjection, 250))
   },
   computed: {
+    strokeWidthComputed () {
+      return Math.round((this.strokeWidth / this.zoomLevel) * 10) / 10
+    },
+    ordinalLegend () {
+      return this.category.categories.map((d, i) => {
+        return {
+          name: d.label,
+          color: this.colorScale(d.val)
+        }
+      })
+    },
     path () {
       return d3.geoPath().projection(this.projection)
     },
